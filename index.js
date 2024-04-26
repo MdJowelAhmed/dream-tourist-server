@@ -32,8 +32,20 @@ async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     // await client.connect();
+    const spotCollection=client.db('spotDB').collection('spot')
 
+    app.get('/addSpot', async(req,res)=>{
+        const cursor=spotCollection.find()
+        const result=await cursor.toArray()
+        res.send(result)
+    })
 
+    app.post('/addSpot',async(req,res)=>{
+        const addSpot=req.body
+        console.log(addSpot)
+        const result=await spotCollection.insertOne(addSpot)
+        res.send(result)
+    })
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
@@ -44,10 +56,7 @@ async function run() {
 }
 run().catch(console.dir);
 
-app.post('/addSpot',async(req,res)=>{
-    const addSpot=req.body
-    console.log(addSpot)
-})
+
 
 app.get('/', (req,res)=>{
     res.send('TOURISTS SPOT SERVER IS RUNNING')
