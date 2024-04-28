@@ -62,6 +62,36 @@ async function run() {
       const result=await userCollection.insertOne(user)
       res.send(result)
     })
+    app.get('/addSpot/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) }
+      const result = await spotCollection.findOne(query);
+      res.send(result);
+  })
+
+    app.put('/addSpot/:id',async(req,res)=>{
+      const id = req.params.id;
+      const filter={_id: new ObjectId(id)}
+      const options = { upsert: true };
+      const updatedSpot = req.body;
+
+      const spot={
+        $set:{
+          image:updatedSpot.image,
+          spotName:updatedSpot.spotName,
+          country:updatedSpot.country,
+          location:updatedSpot.location,
+          short:updatedSpot.short,
+          average:updatedSpot.average,
+          total:updatedSpot.total,
+          travel:updatedSpot.travel,
+          season:updatedSpot.season,
+        }
+      }
+      const result=await spotCollection.updateOne(filter,spot,options)
+      res.send(result)
+    })
+
     // app.put('/myLis')
 
 
