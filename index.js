@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config()
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app=express();
 const port=process.env.PORT || 5000;
 
@@ -33,10 +33,10 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     // await client.connect();
     const spotCollection=client.db('spotDB').collection('spot')
-    const userCollection=client.db('userDB').collection('user')
+    const userCollection=client.db('spotDB').collection('user')
 
     app.get('/addSpot', async(req,res)=>{
-        const cursor=spotCollection.find().limit(6)
+        const cursor=spotCollection.find()
         const result=await cursor.toArray()
         res.send(result)
     })
@@ -48,13 +48,29 @@ async function run() {
         res.send(result)
     })
 
+    app.get('/myList/:email',async(req,res)=>{
+      // const email=req.body
+      console.log(req.params.email)
+      const result=await spotCollection.find({userEmail:req.params.email}).toArray()
+      res.send(result)
+    })
 
     // user collection 
     app.post('/user',async(req,res)=>{
       const user=req.body
       console.log(user)
+      const result=await userCollection.insertOne(user)
+      res.send(result)
     })
+    // app.put('/myLis')
 
+
+      app.delete('/addSpot/:id',async(req,res)=>{
+        const id=req.params.id
+        const query={_id: new ObjectId(id)}
+        const result=await spotCollection.deleteOne(query)
+        res.send(result)
+      })
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
