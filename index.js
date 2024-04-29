@@ -47,11 +47,32 @@ async function run() {
         const result=await spotCollection.insertOne(addSpot)
         res.send(result)
     })
+    // country
+    // app.post('/addSpot',async(req,res)=>{
+    //     const country=req.body
+    //     console.log(country)
+    //     const result=await spotCollection.find()
+    //     res.send(result)
+    // })
 
     app.get('/myList/:email',async(req,res)=>{
       // const email=req.body
       console.log(req.params.email)
       const result=await spotCollection.find({userEmail:req.params.email}).toArray()
+      res.send(result)
+    })
+    app.get('/countryDetails/:country',async(req,res)=>{
+      console.log(req.params.country)
+      const result=await spotCollection.find({country:req.params.country}).toArray()
+      res.send(result)
+    })
+
+    app.get('/addSpot',async(req,res)=>{
+      const result=await spotCollection.find().sort({average: 1}).toArray()
+      res.send(result)
+    })
+    app.get('/addSpot',async(req,res)=>{
+      const result=await spotCollection.find().sort({average: -1}).toArray()
       res.send(result)
     })
 
@@ -92,7 +113,7 @@ async function run() {
       res.send(result)
     })
 
-    // app.put('/myLis')
+    
 
 
       app.delete('/addSpot/:id',async(req,res)=>{
