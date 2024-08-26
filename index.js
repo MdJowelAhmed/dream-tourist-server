@@ -36,6 +36,8 @@ async function run() {
     const spotCollection = client.db('spotDB').collection('spot')
     const userCollection = client.db('spotDB').collection('user')
     const teamCollection = client.db('spotDB').collection('team')
+    const subCollection = client.db('spotDB').collection('subscribe')
+    const reviewsCollection = client.db('spotDB').collection('reviews')
 
     app.get('/addSpot', async (req, res) => {
       const cursor = spotCollection.find()
@@ -122,13 +124,35 @@ async function run() {
       res.send(result)
     })
 
-  // Get all team members
-  app.get('/team', async (req, res) => {
-    const cursor = teamCollection.find()
-    const result = await cursor.toArray()
-    res.send(result)
-  });
+    // Get all team members
+    app.get('/team', async (req, res) => {
+      const cursor = teamCollection.find()
+      const result = await cursor.toArray()
+      res.send(result)
+    });
 
+    app.get('/reviews', async (req, res) => {
+      const cursor = reviewsCollection.find()
+      const result = await cursor.toArray()
+      res.send(result)
+    });
+    app.post('/subscribe', async (req, res) => {
+      const { name, phone, email } = req.body;
+
+      if (!name || !phone || !email) {
+        return res.status(400).json({ message: 'All fields are required.' });
+      }
+
+      try {
+        const subscriber = { name, phone, email, subscribedAt: new Date() };
+        const result = await subCollection.insertOne(subscriber);
+        
+        res.status(201).json({ message: 'Subscription successful!', subscriberId: result.insertedId });
+      } catch (error) {
+        console.error('Error inserting subscriber:', error);
+        res.status(500).json({ message: 'Subscription failed.' });
+      }
+    });
 
     // Send a ping to confirm a successful connection
     // await client.db("admin").command({ ping: 1 });
