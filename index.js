@@ -38,6 +38,7 @@ async function run() {
     const teamCollection = client.db('spotDB').collection('team')
     const subCollection = client.db('spotDB').collection('subscribe')
     const reviewsCollection = client.db('spotDB').collection('reviews')
+    const packagesCollection = client.db('spotDB').collection('upcoming')
 
     app.get('/addSpot', async (req, res) => {
       const cursor = spotCollection.find()
@@ -152,6 +153,11 @@ async function run() {
         console.error('Error inserting subscriber:', error);
         res.status(500).json({ message: 'Subscription failed.' });
       }
+    });
+
+    app.get('/packages', async (req, res) => {
+      const packages = await packagesCollection.find().toArray();
+      res.send(packages);
     });
 
     // Send a ping to confirm a successful connection
